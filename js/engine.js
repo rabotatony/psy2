@@ -24,7 +24,8 @@ export const eng={
  },
  init(){
    if(this.ctx)return;
-   const c=new (window.AudioContext||window.webkitAudioContext)();
+   const AC=window.AudioContext||window.webkitAudioContext;
+   const c=new AC({latencyHint:'interactive'});
    this.ctx=c;
    this.master=c.createGain(); this.master.gain.value=0.9;
    // Multi-band mastering: split low/mid/high, compress each, recombine
@@ -138,6 +139,7 @@ export const eng={
    g.connect(this.sum); this.sendDelay(g,0.4); this.sendRev(g,0.3);
    vib.start(t); vib.stop(t+dur+0.05);
  },
+ _v:0,_maxV:28,
  kick(t,acc){
    const c=this.ctx,o=c.createOscillator(),g=c.createGain();
    o.type='sine'; o.frequency.setValueAtTime(160,t);
