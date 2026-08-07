@@ -36,7 +36,12 @@ export const eng={
    this.lim.threshold.value=-1.5; this.lim.ratio.value=20; this.lim.knee.value=0;
    this.lim.attack.value=0.001; this.lim.release.value=0.1;
    this.sum=c.createGain();
-   this.sum.connect(this.comp); this.comp.connect(this.lim); this.lim.connect(this.master);
+   this.duck=c.createGain(); this.duck.gain.value=1; this.pumpAmt=0.5;
+   this.driveSh=c.createWaveShaper(); this.driveSh.oversample='4x';
+   const dk=1.4,n2=257,cc=new Float32Array(n2);
+   for(let i=0;i<n2;i++){const x=i/(n2-1)*2-1; cc[i]=Math.tanh(dk*x)/Math.tanh(dk);}
+   this.driveSh.curve=cc;
+   this.sum.connect(this.duck); this.duck.connect(this.comp); this.comp.connect(this.lim); this.lim.connect(this.driveSh); this.driveSh.connect(this.master);
    this.master.connect(c.destination);
    this.analyser=c.createAnalyser(); this.analyser.fftSize=1024;
    this.master.connect(this.analyser);
@@ -86,12 +91,9 @@ export const eng={
  setMacro(name,v){ // v in 0..1
    if(!this.ctx)return;
    const t=this.ctx.currentTime;
-   if(name==='drive'){ // saturation amount on master
-     if(!this.driveSh){ this.driveSh=this.ctx.createWaveShaper(); this.driveSh.oversample='4x'; }
-     const k=1+v*6; const n=257,c=new Float32Array(n);
+   if(name==='drive'){ const k=1+v*8; const n=257,c=new Float32Array(n);
      for(let i=0;i<n;i++){const x=i/(n-1)*2-1; c[i]=Math.tanh(k*x)/Math.tanh(k);}
-     this.driveSh.curve=c;
-   }
+     this.driveSh.curve=c; }
    if(name==='cutoff'){ const f=this.ensureFilter(); if(f) f.frequency.setTargetAtTime(300+Math.pow(v,2)*17700,t,0.05); }
    if(name==='space'){ this.setSpace(v*0.5,v*0.5); }
    if(name==='pump'){ // sidechain depth
