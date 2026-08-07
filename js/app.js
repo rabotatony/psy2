@@ -41,7 +41,8 @@ function buildStyles(){
 
 function buildMacros(){
   const host=document.getElementById('styles'); if(!host)return;
-  const wrap=document.createElement('div');
+  if(document.getElementById('macroRow'))return; // single row only
+  const wrap=document.createElement('div'); wrap.id='macroRow';
   wrap.style.cssText='display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:10px';
   [["DRIVE",30,"drive"],["CUTOFF",80,"cutoff"],["SPACE",40,"space"],["PUMP",50,"pump"]].forEach(([lab,val,key])=>{
     const l=document.createElement('label'); l.style.cssText='font-size:11px;color:#9ab';
