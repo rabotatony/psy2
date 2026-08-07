@@ -61,15 +61,19 @@ export const eng={
    const c=this.ctx,f=mtof(midi);
    const w=this.wave(timbre);
    const g=c.createGain();
+   const oscs=[];
    const fl=c.createBiquadFilter(); fl.type='lowpass'; fl.Q.value=1.5;
    fl.frequency.setValueAtTime(4000,t); fl.frequency.exponentialRampToValueAtTime(800,t+dur);
    for(let v=0;v<3;v++){
      const o=c.createOscillator(); try{o.setPeriodicWave(w);}catch(e){o.type='sawtooth';}
      o.frequency.value=f; o.detune.value=(v-1)*8;
-     o.connect(fl); o.start(t); o.stop(t+dur+0.05);
+     o.connect(fl); o.start(t); o.stop(t+dur+0.05); oscs.push(o);
    }
    const vib=c.createOscillator(),vg=c.createGain();
-   vib.frequency.value=5; vg.gain.value=4; vib.connect(vg);
+   vib.frequency.value=5; vg.gain.value=6; vib.connect(vg);
+   for(const o of oscs){vg.connect(o.detune);}
+   vib.start(t); vib.stop(t+dur+0.05);
+   }
    fl.connect(g); g.gain.setValueAtTime(0,t);
    g.gain.linearRampToValueAtTime(0.2*(vol||1),t+0.006);
    g.gain.setValueAtTime(0.2*(vol||1),t+dur*0.7); g.gain.linearRampToValueAtTime(0,t+dur);
