@@ -85,7 +85,7 @@ export const eng={
      for(let i=0;i<n;i++){const x=i/(n-1)*2-1; c[i]=Math.tanh(k*x)/Math.tanh(k);}
      this.driveSh.curve=c;
    }
-   if(name==='cutoff'&&this.mFilter){ this.mFilter.frequency.setTargetAtTime(300+Math.pow(v,2)*17700,t,0.05); }
+   if(name==='cutoff'){ const f=this.ensureFilter(); if(f) f.frequency.setTargetAtTime(300+Math.pow(v,2)*17700,t,0.05); }
    if(name==='space'){ this.setSpace(v*0.5,v*0.5); }
    if(name==='pump'){ // sidechain depth
      this.pumpAmt=v;
