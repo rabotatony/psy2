@@ -80,13 +80,10 @@ export const seq={
    if(s===31){
      this.bar++;
      // DJ mode: every 16 bars, evolve to a related style (harmonic, varied, endless)
-     if(this.dj&&this.bar%16===0&&this.styles&&this.styles.length>1){
-       const cur=this.styleIdx!=null?this.styleIdx:0;
-       const next=(cur+1)%this.styles.length;
-       if(this.eng&&this.eng.sweepTransition){ this.eng.sweepTransition(2*(60/(this.st.bpm||this.styles[next].bpm)*4)); }
-       this.setStyle(this.styles[next],7+next*13);
-       this.styleIdx=next;
-       if(this.onStyleChange)this.onStyleChange(next);
+     if(this.dj&&this.bar%16===0){
+       // infinite flow WITHIN the style: evolve motif + sweep for continuous trance flow
+       if(this.eng&&this.eng.sweepTransition){ this.eng.sweepTransition(2*(60/(this.st.bpm||this.style.bpm)*4)); }
+       this.motif=genMotif(7+this.bar*13, SCALES[this.style.scale], progFor(this.style));
      }
    }
  },
