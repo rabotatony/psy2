@@ -1,8 +1,8 @@
 // psy2 app — one-tap for beginners, full control for pros.
-import {STYLES,clamp} from './core.js';
-import {eng} from './engine.js';
-import {seq} from './music.js';
-import {measureStyle} from './validate.js';
+import {STYLES,clamp} from './core.js?v=2';
+import {eng} from './engine.js?v=2';
+import {seq} from './music.js?v=2';
+import {measureStyle} from './validate.js?v=2';
 const $=s=>document.querySelector(s);
 const state={bpm:142,styleIdx:0};
 function applyStyle(i){
