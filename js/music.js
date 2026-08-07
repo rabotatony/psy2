@@ -3,12 +3,18 @@ import {SCALES,PROG,progFor,clamp} from './core.js';
 export function mulberry(seed){let a=seed|0;return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 
 // generate a melodic motif (32 steps) that follows the scale & chord roots
+function chordRoot(style,bar){
+  const progs=progFor(style);
+  const prog=progs[Math.floor(bar/8)%progs.length]||progs[0];
+  return (prog&&prog[Math.floor(bar/2)%prog.length])||0;
+}
 export function genMotif(seed,scale,prog){
   const rnd=mulberry(seed),n=scale.length,A=new Array(32);
   let deg=Math.min(7,n-1);
   for(let s=0;s<32;s++){
-    const bar=Math.floor(s/8)%prog.length;
-    if(s%8===0) deg=Math.max(0,Math.min(n-1,prog[bar]%n)); // land on chord root each bar
+    const pr=Array.isArray(prog[0])?prog[Math.floor(s/8)%prog.length]:prog;
+    const bc=pr[Math.floor(s/4)%pr.length]||0;
+    if(s%8===0) deg=Math.max(0,Math.min(n-1,Math.abs(bc)%n)); // land on chord root each bar
     else if(s%4===0) deg+=rnd()<0.5?-1:1;
     else if(rnd()<0.4) deg+=rnd()<0.5?-1:1;
     deg=Math.max(0,Math.min(n-1,deg));
@@ -57,7 +63,7 @@ export const seq={
    if(sec.kick&&s%8===0) E.kick(t+human,1);
    // bass: rolling (off-kick 16ths) following chord root
    if(sec.bass){
-     const barChord=prog[Math.floor(this.bar/2)%prog.length];
+     const barChord=chordRoot(style,this.bar);
      const root=style? (style.root||40):40;
      if(s%8!==0 && s%2===0) E.bass(t+human,root+barChord,style.bass,sd*1.6);
      if(s%8===0) E.bass(t+human,root+barChord,style.bass,sd*1.6);
@@ -68,7 +74,7 @@ export const seq={
    // lead: motif follows chords
    if(sec.lead&&s%4===0){
      const deg=this.motif[s]||0;
-     const barChord=prog[Math.floor(this.bar/2)%prog.length];
+     const barChord=chordRoot(style,this.bar);
      E.lead(t+human,(style.root||40)+24+sc[deg]+barChord,style.lead,sd*3,sec.lead);
    }
    if(s===31){
