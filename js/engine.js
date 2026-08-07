@@ -39,7 +39,32 @@ export const eng={
    this.master.connect(c.destination);
    this.analyser=c.createAnalyser(); this.analyser.fftSize=1024;
    this.master.connect(this.analyser);
+   // --- space: ping-pong delay + reverb (psytrance depth) ---
+   this.delaySend=c.createGain(); this.delaySend.gain.value=0.0;
+   this.dL=c.createDelay(2); this.dR=c.createDelay(2);
+   this.dL.delayTime.value=0.21; this.dR.delayTime.value=0.32; // dotted 8th feel
+   this.dFilt=c.createBiquadFilter(); this.dFilt.type='lowpass'; this.dFilt.frequency.value=3500;
+   this.dFb=c.createGain(); this.dFb.gain.value=0.35;
+   this.dL.connect(this.dFilt); this.dFilt.connect(this.dR); this.dR.connect(this.dFb); this.dFb.connect(this.dL);
+   this.dL.connect(this.sum); this.dR.connect(this.sum);
+   this.delaySend.connect(this.dL);
+   this.revSend=c.createGain(); this.revSend.gain.value=0.0;
+   this.conv=c.createConvolver(); this.conv.buffer=this.mkImpulse(1.6,3.5);
+   this.revSend.connect(this.conv); this.conv.connect(this.sum);
  },
+ mkImpulse(sec,decay){
+   const c=this.ctx,len=Math.floor(c.sampleRate*sec),b=c.createBuffer(2,len,c.sampleRate);
+   for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch);
+     for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
+   return b;
+ },
+ setSpace(delayAmt,revAmt){
+   if(!this.ctx)return;
+   this.delaySend.gain.setTargetAtTime(delayAmt,this.ctx.currentTime,0.1);
+   this.revSend.gain.setTargetAtTime(revAmt,this.ctx.currentTime,0.1);
+ },
+ sendDelay(node,amt){ node.connect(this.delaySend); },
+ sendRev(node,amt){ node.connect(this.revSend); },
  // Rich bass: wavetable + sub + resonant filter envelope
  bass(t,midi,timbre,dur){
    const c=this.ctx,f=mtof(midi);
@@ -77,7 +102,7 @@ export const eng={
    fl.connect(g); g.gain.setValueAtTime(0,t);
    g.gain.linearRampToValueAtTime(0.2*(vol||1),t+0.006);
    g.gain.setValueAtTime(0.2*(vol||1),t+dur*0.7); g.gain.linearRampToValueAtTime(0,t+dur);
-   g.connect(this.sum);
+   g.connect(this.sum); this.sendDelay(g,0.4); this.sendRev(g,0.3);
    vib.start(t); vib.stop(t+dur+0.05);
  },
  kick(t,acc){
