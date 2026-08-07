@@ -61,6 +61,17 @@ export const seq={
    const bpm=st.bpm||style.bpm,sd=60/bpm/8;
    const human=(Math.random()-0.5)*0.006; // micro-timing soul
    const RH=(typeof RHYTHM!=='undefined'&&RHYTHM[style.name])||{kick:[0,8,16,24],bass:'roll',hat:2,open:[]};
+   const SS2=(typeof SOUND!=='undefined'&&SOUND[style.name])||{};
+   // clap: backbeat for driving styles
+   if(sec.kick&&E.clap&&(style.name==='FULL-ON'||style.name==='ACID'||style.name==='DARK'||style.name==='NIGHT')&&(s===8||s===24)) E.clap(t+human,1);
+   // perc: tribal hits
+   if(sec.hat&&E.perc&&RH.bass==='roll'&&(s===6||s===14||s===22||s===30)) E.perc(t+human,300+((s*53)%200),0.3);
+   // section transitions: riser at end of BUILD, impact+crash at DROP start
+   if(s===0){
+     if(E.riser&&sec.name==='BUILD'){ /* riser over the build handled below */ }
+   }
+   if(E.riser&&s===24&&this.bar%8===7&&sec.name==='BUILD'){ E.riser(t,(60/(st.bpm||style.bpm))*4*2); }
+   if(E.impact&&s===0&&sec.name==='DROP'){ E.impact(t); }
    if(s===0){ /* bar head */ if(sec.pad&&E.pad){ E.pad(t,(style.root||40),[0,3,7],(60/(st.bpm||style.bpm))*4*2,style.pad||'warm'); } }
    // kick: per-style pattern
    if(sec.kick&&RH.kick.includes(s)) E.kick(t+human,1);
