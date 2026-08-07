@@ -35,7 +35,7 @@ export async function measureStyle(style, bars=2){
     if(s%8===0) tmp.kick(t,1);
     if(s%8!==0&&s%2===0){const bc=prog[Math.floor(barIdx/2)%prog.length]; tmp.bass(t,(style.root||40)+bc,style.bass,sd*1.6);}
     if(s%2===0) tmp.hat(t,false,0.12);
-    if(s%4===0){const deg=motif[s]||0; const bc=prog[Math.floor(barIdx/2)%prog.length]; tmp.lead(t,(style.root||40)+24+sc[deg]+bc,style.lead,sd*3,1);}
+    if(s%4===0){const deg=motif[s]||0; const pr=Array.isArray(prog[0])?prog[Math.floor(barIdx/2)%prog.length]:prog; const bc=(pr&&pr[Math.floor(barIdx/2)%pr.length])||0; tmp.lead(t,(style.root||40)+24+sc[deg]+bc,style.lead,sd*3,1);}
     t+=sd;
   }
   const buf=await off.startRendering();
