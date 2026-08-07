@@ -129,6 +129,7 @@ export const eng={
  lead(t,midi,timbre,dur,vol){
    const c=this.ctx,f=mtof(midi);
    const w=this.wave(timbre);
+   const useFM=(this.ss&&this.ss.fm)||(timbre==='metallic');
    const g=c.createGain();
    const oscs=[];
    const fl=c.createBiquadFilter(); fl.type='lowpass'; fl.Q.value=1.5;
@@ -137,6 +138,9 @@ export const eng={
      const o=c.createOscillator(); try{o.setPeriodicWave(w);}catch(e){o.type='sawtooth';}
      o.frequency.value=f; o.detune.value=(v-2)*7;
      o.connect(fl); o.start(t); o.stop(t+dur+0.05); oscs.push(o);
+     if(useFM){ const fm=c.createOscillator(),fmg=c.createGain();
+       fm.type='sine'; fm.frequency.value=f*2.01; fmg.gain.value=f*0.8;
+       fm.connect(fmg); fmg.connect(o.frequency); fm.start(t); fm.stop(t+dur+0.05); }
    }
    const vib=c.createOscillator(),vg=c.createGain();
    vib.frequency.value=5; vg.gain.value=6; vib.connect(vg);
