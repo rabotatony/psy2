@@ -37,6 +37,10 @@ function init(){
     const r=await measureStyle(st,2);
     const out=$('#mout'); if(out)out.textContent='LUFS '+r.lufs+' · Crest '+r.crest+'dB · L'+r.low+'/M'+r.mid+'/H'+r.high+'%';
   });
+  ['drive','cutoff','space','pump'].forEach(n=>{
+    const el=$('#m_'+n); if(!el)return;
+    el.addEventListener('input',e=>{ eng.bind(state); eng.setMacro(n, +e.target.value/100); });
+  });
   const dj=$('#djBtn'); if(dj)dj.addEventListener('click',()=>{
     state.dj=!state.dj;
     seq.setDJ(state.dj,STYLES);
