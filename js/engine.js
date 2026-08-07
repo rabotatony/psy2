@@ -163,6 +163,29 @@ export const eng={
    cg.gain.setValueAtTime(0.35*a,t); cg.gain.exponentialRampToValueAtTime(0.001,t+0.02);
    cl.connect(cg); cg.connect(this.sum); cl.start(t); cl.stop(t+0.03);
  },
+ pad(t,root,chord,dur,timbre){
+   const c=this.ctx;
+   const notes=(chord||[0,7]).map(x=>root+12+x); notes.push(root+24+(chord?chord[0]:0));
+   const w=this.wave(timbre||'warm');
+   notes.forEach(mid=>{
+     const f=440*Math.pow(2,(mid-69)/12);
+     const g=c.createGain();
+     const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900+((this.ss&&this.ss.cut)||0.5)*1500; lp.Q.value=0.8;
+     const gg=c.createGain(); gg.gain.value=1;
+     if(this.ss&&this.ss.gate){ const gl=c.createOscillator(),glg=c.createGain();
+       gl.type='square'; gl.frequency.value=4*(60/((this.st&&this.st.bpm)||140)); glg.gain.value=0.45;
+       gl.connect(glg); glg.connect(gg.gain); gg.gain.value=0.55; gl.start(t); gl.stop(t+dur); }
+     for(let v=0;v<2;v++){
+       const o=c.createOscillator(); try{o.setPeriodicWave(w);}catch(e){o.type='sawtooth';}
+       o.frequency.value=f; o.detune.value=(v?6:-6);
+       o.connect(lp); o.start(t); o.stop(t+dur+0.1);
+     }
+     lp.connect(gg); gg.connect(g);
+     g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.05,t+0.4);
+     g.gain.setValueAtTime(0.05,t+Math.max(0.5,dur-0.5)); g.gain.linearRampToValueAtTime(0,t+dur);
+     g.connect(this.sum); this.sendRev(g,0.6); this.sendDelay(g,0.2);
+   });
+ },
  hat(t,open,vol){
    const c=this.ctx,s=c.createBufferSource(); s.buffer=this.noise||(this.noise=this.mkNoise());
    const hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=open?7000:8600;
