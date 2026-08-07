@@ -84,7 +84,7 @@ export const seq={
    if(E.ride&&(style.name==='CHILL'||style.name==='DUB'||style.name==='PSYCHILL')&&s%8===0) E.ride(t);
    // downSweep at end of drop phrases
    if(E.downSweep&&s===0&&this.bar%8===0&&sec.name==='CLIMAX'){ E.downSweep(t,(60/(st.bpm||style.bpm))*2); }
-   if(s===0){ /* bar head */ if(sec.pad&&E.pad){ E.pad(t,(style.root||40),[0,3,7],(60/(st.bpm||style.bpm))*4*2,style.pad||'warm'); } }
+   if(s===0){ if(E.autoLoudness)E.autoLoudness(); /* bar head */ if(sec.pad&&E.pad){ E.pad(t,(style.root||40),[0,3,7],(60/(st.bpm||style.bpm))*4*2,style.pad||'warm'); } }
    // kick: per-style pattern
    if(sec.kick&&RH.kick.includes(s)) E.kick(t+human,1);
    // bass: per-style groove following chord root
