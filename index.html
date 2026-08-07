@@ -25,5 +25,7 @@ input[type=range]{width:220px}
 <div id="styles"></div>
 <div class="row"><button id="djBtn" style="padding:10px 20px;border-radius:10px;border:1px solid #345;background:#101623;color:#cde;cursor:pointer">🎧 DJ</button><button id="measure" style="padding:10px 20px;border-radius:10px;border:1px solid #345;background:#101623;color:#cde;cursor:pointer">📊 MEASURE</button><span id="mout" style="font-size:12px;color:#9ab"></span></div>
 <script type="module" src="js/app.js"></script>
+<div id="errbox" style="position:fixed;bottom:0;left:0;right:0;background:#401016;color:#ffb4bc;padding:8px;font-size:12px;z-index:999;display:none"></div>
+<script>window.addEventListener("error",function(e){var b=document.getElementById("errbox");if(b){b.style.display="block";b.textContent="ERR: "+(e.message||e)+" @"+(e.filename||"").split("/").pop()+":"+(e.lineno||"");}});</script>
 </body>
 </html>
