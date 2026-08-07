@@ -89,6 +89,19 @@ export const eng={
    f.frequency.exponentialRampToValueAtTime(18000,t+dur);
  },
  // PRO MACROS — deep, real control over the sound
+ autoLoudness(){
+   if(!this.analyser||!this.ctx)return;
+   const n=this.analyser.fftSize;
+   if(!this._td||this._td.length!==n) this._td=new Float32Array(n);
+   this.analyser.getFloatTimeDomainData(this._td);
+   let sum=0; for(let i=0;i<n;i+=4){const v=this._td[i]; sum+=v*v;}
+   const rms=Math.sqrt(sum/(n/4));
+   const target=0.22; // ~-9 LUFS equivalent RMS
+   if(rms>1e-4){
+     const g=this.master.gain.value*Math.pow(target/rms,0.15); // gentle
+     this.master.gain.setTargetAtTime(Math.min(1.4,Math.max(0.3,g)),this.ctx.currentTime,0.5);
+   }
+ },
  setStyleSynth(cfg){ this.ss=cfg||{}; },
  setAutomation(energy){ // 0..1 — opens/closes master filter with the music
    const f=this.ensureFilter(); if(!f)return;
