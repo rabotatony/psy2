@@ -81,6 +81,7 @@ export const eng={
    f.frequency.exponentialRampToValueAtTime(18000,t+dur);
  },
  // PRO MACROS — deep, real control over the sound
+ setStyleSynth(cfg){ this.ss=cfg||{}; },
  setAutomation(energy){ // 0..1 — opens/closes master filter with the music
    const f=this.ensureFilter(); if(!f)return;
    const t=this.ctx.currentTime;
@@ -115,7 +116,7 @@ export const eng={
    o.frequency.value=f;
    const sub=c.createOscillator(); sub.type='sine'; sub.frequency.value=f;
    const sg=c.createGain(); sg.gain.value=0.6;
-   const fl=c.createBiquadFilter(); fl.type='lowpass'; fl.Q.value=3;
+   const fl=c.createBiquadFilter(); fl.type='lowpass'; fl.Q.value=((this.ss&&this.ss.acid)?8:1)+(this.ss&&this.ss.acid?4:(3));
    fl.frequency.setValueAtTime(2500,t);
    fl.frequency.exponentialRampToValueAtTime(200,t+dur);
    const g=c.createGain();
