@@ -61,7 +61,7 @@ export const seq={
    const bpm=st.bpm||style.bpm,sd=60/bpm/8;
    const human=(Math.random()-0.5)*0.006; // micro-timing soul
    const RH=(typeof RHYTHM!=='undefined'&&RHYTHM[style.name])||{kick:[0,8,16,24],bass:'roll',hat:2,open:[]};
-   if(s===0){ /* bar head */ }
+   if(s===0){ /* bar head */ if(sec.pad&&E.pad){ E.pad(t,(style.root||40),[0,3,7],(60/(st.bpm||style.bpm))*4*2,style.pad||'warm'); } }
    // kick: per-style pattern
    if(sec.kick&&RH.kick.includes(s)) E.kick(t+human,1);
    // bass: per-style groove following chord root
