@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSY2 · מנוע פסיי-טראנס</title>
+<style>
+body{margin:0;background:#07090f;color:#eef;font-family:system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:20px}
+h1{color:#d4ff3f;letter-spacing:2px}
+#play{font-size:22px;padding:16px 40px;border-radius:14px;border:2px solid #d4ff3f;background:#131a10;color:#d4ff3f;cursor:pointer;margin:14px}
+#styles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:640px}
+.stylebtn{padding:10px 14px;border-radius:10px;border:1px solid #345;background:#101623;color:#cde;cursor:pointer}
+.stylebtn.on{border-color:#d4ff3f;color:#d4ff3f;background:#1a2410}
+.row{display:flex;gap:12px;align-items:center;margin:10px}
+input[type=range]{width:220px}
+</style>
+</head>
+<body>
+<h1>PSY2</h1>
+<button id="play">▶ PLAY</button>
+<div class="row"><span>BPM</span><input type="range" id="bpmSlider" min="60" max="200" value="142"><span id="bpmVal">142</span></div>
+<div id="styles"></div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
