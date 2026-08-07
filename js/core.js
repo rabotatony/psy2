@@ -44,3 +44,17 @@ export const SOUND={
  'PSYCHILL':{drive:.3,cut:.5,space:.65,pump:.25},
  'DUB':{drive:.35,cut:.4,space:.75,pump:.3},
 };
+
+// Per-style rhythm identity — each style its own groove, its own thing
+export const RHYTHM={
+ 'FULL-ON':{kick:[0,8,16,24],bass:'roll',hat:2,open:[4,12,20,28]},
+ 'DARK':{kick:[0,8,16,24],bass:'roll',hat:2,open:[]},
+ 'PROG':{kick:[0,8,16,24],bass:'offbeat',hat:4,open:[8,24]},
+ 'ACID':{kick:[0,8,16,24],bass:'roll',hat:2,open:[4,12,20,28]},
+ 'GOA':{kick:[0,8,16,24],bass:'roll',hat:4,open:[8,24]},
+ 'NIGHT':{kick:[0,8,16,24],bass:'roll',hat:2,open:[4,20]},
+ 'CHILL':{kick:[0,16],bass:'half',hat:8,open:[]},
+ 'AMBIENT':{kick:[],bass:'none',hat:0,open:[]},
+ 'PSYCHILL':{kick:[0,16],bass:'half',hat:8,open:[]},
+ 'DUB':{kick:[0,16],bass:'wobble',hat:4,open:[]},
+};
