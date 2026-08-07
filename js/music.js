@@ -1,5 +1,5 @@
 // psy2 music — harmonic 32-step sequencer + intelligent arrangement.
-import {SCALES,PROG,progFor,clamp,RHYTHM} from './core.js?v=2';
+import {SCALES,PROG,progFor,clamp,RHYTHM,SOUND} from './core.js?v=2';
 export function mulberry(seed){let a=seed|0;return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 
 // generate a melodic motif (32 steps) that follows the scale & chord roots
@@ -77,7 +77,12 @@ export const seq={
    if(sec.hat&&RH.hat>0&&s%RH.hat===0) E.hat(t+human,false,0.1+sec.hat*0.06);
    if(sec.hat>0.6&&RH.open.includes(s)) E.hat(t+human,true,0.12);
    // lead: motif follows chords
-   if(sec.lead&&s%4===0){
+   const SS=(typeof SOUND!=='undefined'&&SOUND[style.name])||{};
+   if(sec.lead&&SS.arp){
+     // arpeggio: cycle chord tones every 2 steps
+     if(s%2===0){ const tones=[0,2,4,7]; const tn=tones[(s/2)%4]; const barChord=chordRoot(style,this.bar);
+       E.lead(t+human,(style.root||40)+24+sc[tn%sc.length]+barChord,style.lead,sd*1.8,sec.lead*0.8); }
+   } else if(sec.lead&&s%4===0){
      const deg=this.motif[s]||0;
      const barChord=chordRoot(style,this.bar);
      E.lead(t+human,(style.root||40)+24+sc[deg]+barChord,style.lead,sd*3,sec.lead);
