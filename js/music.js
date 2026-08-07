@@ -101,6 +101,11 @@ export const seq={
    if(sec.hat>0.6&&RH.open.includes(s)) E.hat(t+human,true,0.12);
    // lead: motif follows chords
    const SS=(typeof SOUND!=='undefined'&&SOUND[style.name])||{};
+   // chord stabs: on off-beats for driving styles (trance stabs)
+   if(sec.lead&&(style.name==='FULL-ON'||style.name==='PROG'||style.name==='GOA')&&(s===12||s===28)){
+     const barChord=chordRoot(style,this.bar);
+     [0,3,7].forEach(iv=>{ E.lead(t+human,(style.root||40)+24+sc[(iv)%sc.length]+barChord,style.lead,sd*1.5,0.5); });
+   }
    if(sec.lead&&SS.arp){
      // arpeggio: cycle chord tones every 2 steps
      if(s%2===0){ const tones=[0,2,4,7]; const tn=tones[(s/2)%4]; const barChord=chordRoot(style,this.bar);
