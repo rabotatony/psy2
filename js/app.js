@@ -15,8 +15,18 @@ function applyStyle(i){
   document.querySelectorAll('.stylebtn').forEach((el,k)=>el.classList.toggle('on',k===i));
 }
 function toggle(){
-  if(seq.playing){seq.stop(); $('#play').textContent='▶ PLAY';}
-  else{ eng.bind(state); seq.bind(state,eng); if(!seq.style)applyStyle(state.styleIdx); seq.start(); $('#play').textContent='■ STOP'; }
+  if(seq.playing){seq.stop(); const p=$('#play'); if(p)p.textContent='▶ PLAY';}
+  else{
+    try{
+      eng.bind(state); seq.bind(state,eng);
+      if(!seq.style)applyStyle(state.styleIdx);
+      seq.start();
+      if(eng.ctx&&eng.ctx.state==='suspended'){ eng.ctx.resume().then(()=>{const p=$('#play');if(p)p.textContent='■ STOP';}); }
+      else { const p=$('#play'); if(p)p.textContent='■ STOP'; }
+    }catch(e){
+      const b=document.getElementById('errbox'); if(b){b.style.display='block';b.textContent='PLAY ERR: '+e.message;}
+    }
+  }
 }
 function buildStyles(){
   const w=$('#styles'); if(!w)return; w.innerHTML='';
