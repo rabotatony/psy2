@@ -1,5 +1,5 @@
 // psy2 app — one-tap for beginners, full control for pros.
-import {STYLES,clamp} from './core.js?v=2';
+import {STYLES,clamp,SOUND} from './core.js?v=2';
 import {eng} from './engine.js?v=2';
 import {seq} from './music.js?v=2';
 import {measureStyle} from './validate.js?v=2';
