@@ -1,0 +1,35 @@
+// psy2 app — one-tap for beginners, full control for pros.
+import {STYLES,clamp} from './core.js';
+import {eng} from './engine.js';
+import {seq} from './music.js';
+const $=s=>document.querySelector(s);
+const state={bpm:142,styleIdx:0};
+function applyStyle(i){
+  state.styleIdx=i;
+  const st=STYLES[i];
+  state.bpm=st.bpm;
+  const b=$('#bpmVal'); if(b)b.textContent=st.bpm;
+  const sl=$('#bpmSlider'); if(sl)sl.value=st.bpm;
+  seq.setStyle(st,7+i*13);
+  document.querySelectorAll('.stylebtn').forEach((el,k)=>el.classList.toggle('on',k===i));
+}
+function toggle(){
+  if(seq.playing){seq.stop(); $('#play').textContent='▶ PLAY';}
+  else{ eng.bind(state); seq.bind(state,eng); if(!seq.style)applyStyle(state.styleIdx); seq.start(); $('#play').textContent='■ STOP'; }
+}
+function buildStyles(){
+  const w=$('#styles'); if(!w)return; w.innerHTML='';
+  STYLES.forEach((s,i)=>{
+    const b=document.createElement('button'); b.className='stylebtn'; b.type='button';
+    b.innerHTML=s.name+'<small>'+s.bpm+'</small>';
+    b.addEventListener('click',()=>applyStyle(i));
+    w.appendChild(b);
+  });
+}
+function init(){
+  buildStyles();
+  $('#play').addEventListener('click',toggle);
+  $('#bpmSlider').addEventListener('input',e=>{state.bpm=+e.target.value; $('#bpmVal').textContent=state.bpm;});
+  applyStyle(0);
+}
+document.addEventListener('DOMContentLoaded',init);
