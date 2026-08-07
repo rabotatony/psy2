@@ -2,6 +2,7 @@
 import {STYLES,clamp} from './core.js';
 import {eng} from './engine.js';
 import {seq} from './music.js';
+import {measureStyle} from './validate.js';
 const $=s=>document.querySelector(s);
 const state={bpm:142,styleIdx:0};
 function applyStyle(i){
@@ -31,5 +32,10 @@ function init(){
   $('#play').addEventListener('click',toggle);
   $('#bpmSlider').addEventListener('input',e=>{state.bpm=+e.target.value; $('#bpmVal').textContent=state.bpm;});
   applyStyle(0);
+  const mb=$('#measure'); if(mb)mb.addEventListener('click',async()=>{
+    const st=STYLES[state.styleIdx];
+    const r=await measureStyle(st,2);
+    const out=$('#mout'); if(out)out.textContent='LUFS '+r.lufs+' · Crest '+r.crest+'dB · L'+r.low+'/M'+r.mid+'/H'+r.high+'%';
+  });
 }
 document.addEventListener('DOMContentLoaded',init);
