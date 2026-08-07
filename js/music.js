@@ -77,6 +77,7 @@ export const seq={
      if(this.dj&&this.bar%16===0&&this.styles&&this.styles.length>1){
        const cur=this.styleIdx!=null?this.styleIdx:0;
        const next=(cur+1)%this.styles.length;
+       if(this.eng&&this.eng.sweepTransition){ this.eng.sweepTransition(2*(60/(this.st.bpm||this.styles[next].bpm)*4)); }
        this.setStyle(this.styles[next],7+next*13);
        this.styleIdx=next;
        if(this.onStyleChange)this.onStyleChange(next);
