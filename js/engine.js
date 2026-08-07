@@ -198,6 +198,48 @@ export const eng={
      g.connect(this.sum); this.sendRev(g,0.6); this.sendDelay(g,0.2);
    });
  },
+ zap(t){
+   const c=this.ctx,o=c.createOscillator(); o.type='square';
+   o.frequency.setValueAtTime(1800,t); o.frequency.exponentialRampToValueAtTime(120,t+0.09);
+   const g=c.createGain(); g.gain.setValueAtTime(0.22,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+   o.connect(g); g.connect(this.sum); this.sendDelay(g,0.4); o.start(t); o.stop(t+0.12);
+ },
+ downSweep(t,dur){
+   const c=this.ctx,o=c.createOscillator(); o.type='sawtooth';
+   o.frequency.setValueAtTime(3000,t); o.frequency.exponentialRampToValueAtTime(80,t+dur);
+   const fl=c.createBiquadFilter(); fl.type='lowpass'; fl.frequency.value=4000;
+   const g=c.createGain(); g.gain.setValueAtTime(0.25,t); g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+   o.connect(fl); fl.connect(g); g.connect(this.sum); o.start(t); o.stop(t+dur+0.05);
+ },
+ shaker(t,vol){
+   const c=this.ctx,s=c.createBufferSource(); s.buffer=this.noise||(this.noise=this.mkNoise());
+   const hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=7500;
+   const g=c.createGain(); g.gain.setValueAtTime(0.12*(vol||1),t); g.gain.exponentialRampToValueAtTime(0.001,t+0.06);
+   s.connect(hp); hp.connect(g); g.connect(this.sum); s.start(t); s.stop(t+0.08);
+ },
+ ride(t){
+   const c=this.ctx,s=c.createBufferSource(); s.buffer=this.noise||(this.noise=this.mkNoise());
+   const hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=8500;
+   const g=c.createGain(); g.gain.setValueAtTime(0.08,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
+   s.connect(hp); hp.connect(g); g.connect(this.sum); this.sendRev(g,0.3); s.start(t); s.stop(t+0.55);
+ },
+ tom(t,f){
+   const c=this.ctx,o=c.createOscillator(); o.type='sine';
+   o.frequency.setValueAtTime(f,t); o.frequency.exponentialRampToValueAtTime(f*0.6,t+0.15);
+   const g=c.createGain(); g.gain.setValueAtTime(0.4,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+   o.connect(g); g.connect(this.sum); o.start(t); o.stop(t+0.22);
+ },
+ granular(t,dur){
+   const c=this.ctx;
+   for(let i=0;i<8;i++){
+     const s=c.createBufferSource(); s.buffer=this.noise||(this.noise=this.mkNoise());
+     const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=500+Math.random()*6000; bp.Q.value=8;
+     const g=c.createGain(); const st=t+i*(dur/8);
+     g.gain.setValueAtTime(0.0001,st); g.gain.exponentialRampToValueAtTime(0.1,st+0.02); g.gain.exponentialRampToValueAtTime(0.001,st+0.1);
+     s.connect(bp); bp.connect(g); g.connect(this.sum); this.sendRev(g,0.5);
+     s.start(st); s.stop(st+0.12);
+   }
+ },
  clap(t,vol){
    const c=this.ctx,s=c.createBufferSource(); s.buffer=this.noise||(this.noise=this.mkNoise());
    const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1800; bp.Q.value=1.2;
