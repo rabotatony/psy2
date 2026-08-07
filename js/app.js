@@ -12,7 +12,7 @@ function applyStyle(i){
   const b=$('#bpmVal'); if(b)b.textContent=st.bpm;
   const sl=$('#bpmSlider'); if(sl)sl.value=st.bpm;
   seq.setStyle(st,7+i*13);
-  const sd=SOUND[st.name]; if(sd&&eng.ctx){eng.setMacro('drive',sd.drive);eng.setMacro('cutoff',sd.cut);eng.setMacro('space',sd.space);eng.setMacro('pump',sd.pump);}
+  const sd=SOUND[st.name]; if(sd&&eng.ctx){eng.setStyleSynth(sd);eng.setMacro('drive',sd.drive);eng.setMacro('cutoff',sd.cut);eng.setMacro('space',sd.space);eng.setMacro('pump',sd.pump);}
   document.querySelectorAll('.stylebtn').forEach((el,k)=>el.classList.toggle('on',k===i));
 }
 function toggle(){
