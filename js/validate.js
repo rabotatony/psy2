@@ -1,7 +1,7 @@
 // psy2 validate — objective sound measurement: LUFS, crest, band balance.
 // Renders the current style offline and reports numbers, so sound can be tuned to targets.
-import {eng} from './engine.js';
-import {seq} from './music.js';
+import {eng} from './engine.js?v=2';
+import {seq} from './music.js?v=2';
 
 export async function measureStyle(style, bars=2){
   const sr=44100, bpm=style.bpm, s32=60/bpm/8;
@@ -22,9 +22,9 @@ export async function measureStyle(style, bars=2){
   tmp.master.connect(off.destination);
   tmp.noise=null;
   // schedule
-  const SCALES=(await import('./core.js')).SCALES, progFor=(await import('./core.js')).progFor;
+  const SCALES=(await import('./core.js?v=2')).SCALES, progFor=(await import('./core.js?v=2')).progFor;
   const sc=SCALES[style.scale], prog=progFor(style);
-  const motif=(await import('./music.js')).genMotif(7,sc,prog);
+  const motif=(await import('./music.js?v=2')).genMotif(7,sc,prog);
   let step=0,bar=0,t=0.05;
   const stepsPerBar=32;
   const totalSteps=bars*stepsPerBar;
