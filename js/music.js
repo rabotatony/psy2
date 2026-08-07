@@ -12,6 +12,8 @@ export function genMotif(seed,scale,prog){
   const rnd=mulberry(seed),n=scale.length,A=new Array(32);
   let deg=Math.min(7,n-1);
   for(let s=0;s<32;s++){
+    // phrase structure: 2-bar call, 2-bar response (musical)
+    const phrase=Math.floor(s/16)%2;
     const pr=Array.isArray(prog[0])?prog[Math.floor(s/8)%prog.length]:prog;
     const bc=pr[Math.floor(s/4)%pr.length]||0;
     if(s%8===0) deg=Math.max(0,Math.min(n-1,Math.abs(bc)%n)); // land on chord root each bar
@@ -59,7 +61,8 @@ export const seq={
    // AUTOMATION: master filter follows section energy (trance sweep)
    if(s===0&&this.eng&&this.eng.setAutomation){ this.eng.setAutomation(sec.energy); }
    const bpm=st.bpm||style.bpm,sd=60/bpm/8;
-   const human=(Math.random()-0.5)*0.006; // micro-timing soul
+   const swingAmt=(style.name==='PROG'||style.name==='SUOMI'||style.name==='CHILL')?0.12:0.03;
+   const human=(Math.random()-0.5)*0.006+((s%2===1)?swingAmt*sd*0.3:0); // micro-timing + swing
    const RH=(typeof RHYTHM!=='undefined'&&RHYTHM[style.name])||{kick:[0,8,16,24],bass:'roll',hat:2,open:[]};
    const SS2=(typeof SOUND!=='undefined'&&SOUND[style.name])||{};
    // clap: backbeat for driving styles
