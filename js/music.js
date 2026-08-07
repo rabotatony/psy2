@@ -61,8 +61,7 @@ export const seq={
    // AUTOMATION: master filter follows section energy (trance sweep)
    if(s===0&&this.eng&&this.eng.setAutomation){ this.eng.setAutomation(sec.energy); }
    const bpm=st.bpm||style.bpm,sd=60/bpm/8;
-   const swingAmt=(style.name==='PROG'||style.name==='SUOMI'||style.name==='CHILL')?0.12:0.03;
-   const human=(Math.random()-0.5)*0.006+((s%2===1)?swingAmt*sd*0.3:0); // micro-timing + swing
+   const human=0; // tight quantization — everything on the grid
    const RH=(typeof RHYTHM!=='undefined'&&RHYTHM[style.name])||{kick:[0,8,16,24],bass:'roll',hat:2,open:[]};
    const SS2=(typeof SOUND!=='undefined'&&SOUND[style.name])||{};
    // clap: backbeat for driving styles
