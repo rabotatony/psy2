@@ -58,6 +58,22 @@ export const eng={
      for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
    return b;
  },
+ // master lowpass for smooth DJ transitions
+ ensureFilter(){
+   if(this.mFilter||!this.ctx)return this.mFilter;
+   const f=this.ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=18000; f.Q.value=1;
+   try{ this.sum.disconnect(); }catch(e){}
+   this.sum.connect(f); f.connect(this.comp);
+   this.mFilter=f; return f;
+ },
+ sweepTransition(dur){
+   const f=this.ensureFilter(); if(!f)return;
+   const t=this.ctx.currentTime;
+   f.frequency.cancelScheduledValues(t);
+   f.frequency.setValueAtTime(18000,t);
+   f.frequency.exponentialRampToValueAtTime(300,t+dur*0.5);
+   f.frequency.exponentialRampToValueAtTime(18000,t+dur);
+ },
  setSpace(delayAmt,revAmt){
    if(!this.ctx)return;
    this.delaySend.gain.setTargetAtTime(delayAmt,this.ctx.currentTime,0.1);
