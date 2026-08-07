@@ -37,8 +37,24 @@ function buildStyles(){
     w.appendChild(b);
   });
 }
+
+function buildMacros(){
+  const host=document.getElementById('styles'); if(!host)return;
+  const wrap=document.createElement('div');
+  wrap.style.cssText='display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:10px';
+  [["DRIVE",30,"drive"],["CUTOFF",80,"cutoff"],["SPACE",40,"space"],["PUMP",50,"pump"]].forEach(([lab,val,key])=>{
+    const l=document.createElement('label'); l.style.cssText='font-size:11px;color:#9ab';
+    l.innerHTML=lab+'<br>';
+    const r=document.createElement('input'); r.type='range'; r.min=0; r.max=100; r.value=val; r.style.width='110px';
+    r.addEventListener('input',()=>{ eng.bind(state); eng.setMacro(key, +r.value/100); });
+    l.appendChild(r); wrap.appendChild(l);
+  });
+  host.parentNode.insertBefore(wrap,host);
+}
+
 function init(){
   buildStyles();
+  buildMacros();
   $('#play').addEventListener('click',toggle);
   $('#bpmSlider').addEventListener('input',e=>{state.bpm=+e.target.value; $('#bpmVal').textContent=state.bpm;});
   applyStyle(0);
