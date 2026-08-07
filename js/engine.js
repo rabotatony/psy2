@@ -41,7 +41,15 @@ export const eng={
    const dk=1.4,n2=257,cc=new Float32Array(n2);
    for(let i=0;i<n2;i++){const x=i/(n2-1)*2-1; cc[i]=Math.tanh(dk*x)/Math.tanh(dk);}
    this.driveSh.curve=cc;
-   this.sum.connect(this.duck); this.duck.connect(this.comp); this.comp.connect(this.lim); this.lim.connect(this.driveSh); this.driveSh.connect(this.master);
+   this.sum.connect(this.duck); this.duck.connect(this.comp); this.comp.connect(this.lim); this.lim.connect(this.driveSh); this.driveSh.connect(this.eqLow);
+   this.eqLow=c.createBiquadFilter(); this.eqLow.type='lowshelf'; this.eqLow.frequency.value=100; this.eqLow.gain.value=2.5;
+   this.eqMid=c.createBiquadFilter(); this.eqMid.type='peaking'; this.eqMid.frequency.value=2500; this.eqMid.Q.value=0.8; this.eqMid.gain.value=1.5;
+   this.eqHigh=c.createBiquadFilter(); this.eqHigh.type='highshelf'; this.eqHigh.frequency.value=9000; this.eqHigh.gain.value=2;
+   this.eqLow.connect(this.eqMid); this.eqMid.connect(this.eqHigh); this.eqHigh.connect(this.master);
+   // stereo widener: delayed side
+   this.wid=c.createDelay(0.05); this.wid.delayTime.value=0.011;
+   this.widG=c.createGain(); this.widG.gain.value=0.22;
+   this.sum.connect(this.wid); this.wid.connect(this.widG); this.widG.connect(this.comp);
    this.master.connect(c.destination);
    this.analyser=c.createAnalyser(); this.analyser.fftSize=1024;
    this.master.connect(this.analyser);
