@@ -27,6 +27,9 @@ export const STYLES=[
  {name:'AMBIENT',bpm:70,scale:'LYDIAN',bass:'sub',lead:'hollow',pad:'warm',energy:0.15},
  {name:'PSYCHILL',bpm:96,scale:'DHARM',bass:'sub',lead:'hollow',pad:'warm',energy:0.35},
  {name:'DUB',bpm:76,scale:'MIN',bass:'sub',lead:'reed',pad:'hollow',energy:0.3},
+ {name:'HI-TECH',bpm:170,scale:'HARM',bass:'growl',lead:'metallic',pad:'hollow',root:41},
+ {name:'FOREST',bpm:150,scale:'PHRY',bass:'growl',lead:'reed',pad:'hollow',root:38},
+ {name:'SUOMI',bpm:145,scale:'MIN',bass:'growl',lead:'pluck',pad:'warm',root:43},
 ];
 export function progFor(style){ return PROG[style.scale]||PROG.MIN; }
 export const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
@@ -43,6 +46,9 @@ export const SOUND={
  'AMBIENT':{drive:.1,cut:.35,space:.8,pump:.1,acid:0,gate:0,arp:0},
  'PSYCHILL':{drive:.3,cut:.5,space:.65,pump:.25,acid:0,gate:0,arp:1},
  'DUB':{drive:.35,cut:.4,space:.75,pump:.3,acid:0,gate:0,arp:0},
+ 'HI-TECH':{drive:.85,cut:.9,space:.25,pump:.7,acid:1,gate:0,arp:1,fm:1},
+ 'FOREST':{drive:.75,cut:.5,space:.35,pump:.6,acid:0,gate:1,arp:0,fm:0},
+ 'SUOMI':{drive:.5,cut:.75,space:.35,pump:.55,acid:0,gate:1,arp:1,fm:0},
 };
 
 // Per-style rhythm identity — each style its own groove, its own thing
@@ -57,4 +63,7 @@ export const RHYTHM={
  'AMBIENT':{kick:[],bass:'none',hat:0,open:[]},
  'PSYCHILL':{kick:[0,16],bass:'half',hat:8,open:[]},
  'DUB':{kick:[0,16],bass:'wobble',hat:4,open:[]},
+ 'HI-TECH':{kick:[0,8,16,24],bass:'roll',hat:2,open:[4,12,20,28]},
+ 'FOREST':{kick:[0,8,16,24],bass:'roll',hat:2,open:[]},
+ 'SUOMI':{kick:[0,8,16,24],bass:'offbeat',hat:2,open:[8,24]},
 };
