@@ -76,6 +76,13 @@ export const eng={
    f.frequency.exponentialRampToValueAtTime(18000,t+dur);
  },
  // PRO MACROS — deep, real control over the sound
+ setAutomation(energy){ // 0..1 — opens/closes master filter with the music
+   const f=this.ensureFilter(); if(!f)return;
+   const t=this.ctx.currentTime;
+   const target=400+Math.pow(energy,1.5)*17600;
+   f.frequency.cancelScheduledValues(t);
+   f.frequency.setTargetAtTime(target,t,0.4);
+ },
  setMacro(name,v){ // v in 0..1
    if(!this.ctx)return;
    const t=this.ctx.currentTime;
@@ -123,9 +130,9 @@ export const eng={
    const oscs=[];
    const fl=c.createBiquadFilter(); fl.type='lowpass'; fl.Q.value=1.5;
    fl.frequency.setValueAtTime(4000,t); fl.frequency.exponentialRampToValueAtTime(800,t+dur);
-   for(let v=0;v<3;v++){
+   for(let v=0;v<5;v++){
      const o=c.createOscillator(); try{o.setPeriodicWave(w);}catch(e){o.type='sawtooth';}
-     o.frequency.value=f; o.detune.value=(v-1)*8;
+     o.frequency.value=f; o.detune.value=(v-2)*7;
      o.connect(fl); o.start(t); o.stop(t+dur+0.05); oscs.push(o);
    }
    const vib=c.createOscillator(),vg=c.createGain();
