@@ -132,12 +132,10 @@ export const eng={
    vib.frequency.value=5; vg.gain.value=6; vib.connect(vg);
    for(const o of oscs){vg.connect(o.detune);}
    vib.start(t); vib.stop(t+dur+0.05);
-   }
    fl.connect(g); g.gain.setValueAtTime(0,t);
    g.gain.linearRampToValueAtTime(0.2*(vol||1),t+0.006);
    g.gain.setValueAtTime(0.2*(vol||1),t+dur*0.7); g.gain.linearRampToValueAtTime(0,t+dur);
    g.connect(this.sum); this.sendDelay(g,0.4); this.sendRev(g,0.3);
-   vib.start(t); vib.stop(t+dur+0.05);
  },
  _v:0,_maxV:28,
  kick(t,acc){
