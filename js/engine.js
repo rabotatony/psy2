@@ -148,11 +148,19 @@ export const eng={
  },
  _v:0,_maxV:28,
  kick(t,acc){
-   const c=this.ctx,o=c.createOscillator(),g=c.createGain();
-   o.type='sine'; o.frequency.setValueAtTime(160,t);
-   o.frequency.exponentialRampToValueAtTime(48,t+0.04);
-   g.gain.setValueAtTime(1.0*(acc||1),t); g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
-   o.connect(g); g.connect(this.sum); o.start(t); o.stop(t+0.2);
+   const c=this.ctx,a=acc||1;
+   // body: punchy sine drop
+   const o=c.createOscillator(),g=c.createGain();
+   o.type='sine'; o.frequency.setValueAtTime(190,t);
+   o.frequency.exponentialRampToValueAtTime(50,t+0.05);
+   g.gain.setValueAtTime(1.0*a,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.22);
+   o.connect(g); g.connect(this.sum); o.start(t); o.stop(t+0.25);
+   // click: short high transient for attack
+   const cl=c.createOscillator(),cg=c.createGain();
+   cl.type='square'; cl.frequency.setValueAtTime(900,t);
+   cl.frequency.exponentialRampToValueAtTime(200,t+0.012);
+   cg.gain.setValueAtTime(0.35*a,t); cg.gain.exponentialRampToValueAtTime(0.001,t+0.02);
+   cl.connect(cg); cg.connect(this.sum); cl.start(t); cl.stop(t+0.03);
  },
  hat(t,open,vol){
    const c=this.ctx,s=c.createBufferSource(); s.buffer=this.noise||(this.noise=this.mkNoise());
