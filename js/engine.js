@@ -186,6 +186,43 @@ export const eng={
      g.connect(this.sum); this.sendRev(g,0.6); this.sendDelay(g,0.2);
    });
  },
+ clap(t,vol){
+   const c=this.ctx,s=c.createBufferSource(); s.buffer=this.noise||(this.noise=this.mkNoise());
+   const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1800; bp.Q.value=1.2;
+   const g=c.createGain(); g.gain.setValueAtTime(0.5*(vol||1),t);
+   g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
+   s.connect(bp); bp.connect(g); g.connect(this.sum); this.sendRev(g,0.3);
+   s.start(t); s.stop(t+0.2);
+ },
+ perc(t,freq,pan){
+   const c=this.ctx,o=c.createOscillator(); o.type='sine';
+   o.frequency.setValueAtTime(freq,t); o.frequency.exponentialRampToValueAtTime(freq*0.5,t+0.08);
+   const g=c.createGain(); g.gain.setValueAtTime(0.25,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+   o.connect(g); g.connect(this.sum); o.start(t); o.stop(t+0.12);
+ },
+ crash(t){
+   const c=this.ctx,s=c.createBufferSource(); s.buffer=this.noise||(this.noise=this.mkNoise());
+   const hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=5000;
+   const g=c.createGain(); g.gain.setValueAtTime(0.3,t); g.gain.exponentialRampToValueAtTime(0.001,t+1.2);
+   s.connect(hp); hp.connect(g); g.connect(this.sum); this.sendRev(g,0.5);
+   s.start(t); s.stop(t+1.3);
+ },
+ riser(t,dur){
+   const c=this.ctx,s=c.createBufferSource(); s.buffer=this.noise||(this.noise=this.mkNoise());
+   const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=2;
+   bp.frequency.setValueAtTime(300,t); bp.frequency.exponentialRampToValueAtTime(8000,t+dur);
+   const g=c.createGain(); g.gain.setValueAtTime(0.001,t); g.gain.exponentialRampToValueAtTime(0.3,t+dur);
+   g.gain.exponentialRampToValueAtTime(0.001,t+dur+0.05);
+   s.connect(bp); bp.connect(g); g.connect(this.sum); this.sendRev(g,0.4);
+   s.start(t); s.stop(t+dur+0.1);
+ },
+ impact(t){
+   const c=this.ctx,o=c.createOscillator(); o.type='sine';
+   o.frequency.setValueAtTime(120,t); o.frequency.exponentialRampToValueAtTime(35,t+0.4);
+   const g=c.createGain(); g.gain.setValueAtTime(0.8,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
+   o.connect(g); g.connect(this.sum); o.start(t); o.stop(t+0.55);
+   this.crash(t);
+ },
  hat(t,open,vol){
    const c=this.ctx,s=c.createBufferSource(); s.buffer=this.noise||(this.noise=this.mkNoise());
    const hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=open?7000:8600;
