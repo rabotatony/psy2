@@ -30,3 +30,17 @@ export const STYLES=[
 ];
 export function progFor(style){ return PROG[style.scale]||PROG.MIN; }
 export const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+
+// Per-style sound character — makes each style genuinely distinct
+export const SOUND={
+ 'FULL-ON':{drive:.45,cut:.85,space:.3,pump:.55},
+ 'DARK':{drive:.8,cut:.45,space:.2,pump:.65},
+ 'PROG':{drive:.25,cut:.7,space:.5,pump:.35},
+ 'ACID':{drive:.6,cut:.9,space:.25,pump:.5},
+ 'GOA':{drive:.4,cut:.8,space:.45,pump:.45},
+ 'NIGHT':{drive:.7,cut:.55,space:.3,pump:.6},
+ 'CHILL':{drive:.15,cut:.5,space:.6,pump:.2},
+ 'AMBIENT':{drive:.1,cut:.35,space:.8,pump:.1},
+ 'PSYCHILL':{drive:.3,cut:.5,space:.65,pump:.25},
+ 'DUB':{drive:.35,cut:.4,space:.75,pump:.3},
+};
