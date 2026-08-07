@@ -74,6 +74,23 @@ export const eng={
    f.frequency.exponentialRampToValueAtTime(300,t+dur*0.5);
    f.frequency.exponentialRampToValueAtTime(18000,t+dur);
  },
+ // PRO MACROS — deep, real control over the sound
+ setMacro(name,v){ // v in 0..1
+   if(!this.ctx)return;
+   const t=this.ctx.currentTime;
+   if(name==='drive'){ // saturation amount on master
+     if(!this.driveSh){ this.driveSh=this.ctx.createWaveShaper(); this.driveSh.oversample='4x'; }
+     const k=1+v*6; const n=257,c=new Float32Array(n);
+     for(let i=0;i<n;i++){const x=i/(n-1)*2-1; c[i]=Math.tanh(k*x)/Math.tanh(k);}
+     this.driveSh.curve=c;
+   }
+   if(name==='cutoff'&&this.mFilter){ this.mFilter.frequency.setTargetAtTime(300+Math.pow(v,2)*17700,t,0.05); }
+   if(name==='space'){ this.setSpace(v*0.5,v*0.5); }
+   if(name==='pump'){ // sidechain depth
+     this.pumpAmt=v;
+   }
+ },
+ setPump(v){ this.pumpAmt=v; },
  setSpace(delayAmt,revAmt){
    if(!this.ctx)return;
    this.delaySend.gain.setTargetAtTime(delayAmt,this.ctx.currentTime,0.1);
