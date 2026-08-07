@@ -72,6 +72,18 @@ export const seq={
    }
    if(E.riser&&s===24&&this.bar%8===7&&sec.name==='BUILD'){ E.riser(t,(60/(st.bpm||style.bpm))*4*2); }
    if(E.impact&&s===0&&sec.name==='DROP'){ E.impact(t); }
+   // shaker offbeats for groove
+   if(E.shaker&&sec.hat&&s%4===2) E.shaker(t+human,0.8);
+   // zap: psy blips on random off-beats (psy styles)
+   if(E.zap&&sec.lead&&(style.name==='FULL-ON'||style.name==='GOA'||style.name==='HI-TECH'||style.name==='SUOMI')&&s%8===7&&Math.random()<0.5) E.zap(t);
+   // tom fill at end of 4-bar phrase
+   if(E.tom&&s===28&&this.bar%4===3){ E.tom(t,180); E.tom(t+sd*1.5,150); E.tom(t+sd*3,120); }
+   // granular texture in breaks
+   if(E.granular&&s===0&&sec.name==='BREAK'){ E.granular(t,(60/(st.bpm||style.bpm))*4*2); }
+   // ride for chill/dub
+   if(E.ride&&(style.name==='CHILL'||style.name==='DUB'||style.name==='PSYCHILL')&&s%8===0) E.ride(t);
+   // downSweep at end of drop phrases
+   if(E.downSweep&&s===0&&this.bar%8===0&&sec.name==='CLIMAX'){ E.downSweep(t,(60/(st.bpm||style.bpm))*2); }
    if(s===0){ /* bar head */ if(sec.pad&&E.pad){ E.pad(t,(style.root||40),[0,3,7],(60/(st.bpm||style.bpm))*4*2,style.pad||'warm'); } }
    // kick: per-style pattern
    if(sec.kick&&RH.kick.includes(s)) E.kick(t+human,1);
