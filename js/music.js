@@ -56,6 +56,8 @@ export const seq={
  step(s,t){
    const E=this.eng,st=this.st,style=this.style,sc=SCALES[style.scale],prog=progFor(style);
    const sec=sectionAt(this.bar);
+   // AUTOMATION: master filter follows section energy (trance sweep)
+   if(s===0&&this.eng&&this.eng.setAutomation){ this.eng.setAutomation(sec.energy); }
    const bpm=st.bpm||style.bpm,sd=60/bpm/8;
    const human=(Math.random()-0.5)*0.006; // micro-timing soul
    const RH=(typeof RHYTHM!=='undefined'&&RHYTHM[style.name])||{kick:[0,8,16,24],bass:'roll',hat:2,open:[]};
