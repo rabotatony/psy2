@@ -3,7 +3,7 @@ import {eng} from './engine.js';
 import {seq,PRESETS} from './music.js';
 const $=s=>document.querySelector(s);
 const state={bpm:142,style:'FULL-ON',root:42};
-let freqArr=null;
+let freqArr=null; let vizRot=0;
 function applyStyle(name){
   state.style=name; const p=PRESETS[name]; state.bpm=p.bpm;
   const bv=$('#bpmVal'); if(bv)bv.textContent=p.bpm;
@@ -55,7 +55,7 @@ function viz(){
       if(!freqArr)freqArr=new Uint8Array(eng.analyser.frequencyBinCount);
       eng.analyser.getByteFrequencyData(freqArr);
     }
-    const N=90; let rot=(rot||0)+0.004;
+    const N=90; vizRot=(vizRot||0)+0.004; const rot=vizRot;
     for(let i=0;i<N;i++){
       const v=(freqArr&&seq.playing)?freqArr[i*3]/255:0.04+0.03*Math.sin(Date.now()/700+i*0.35);
       const a=i/N*Math.PI*2+rot, R0=Math.min(W,H)*0.2, len=v*Math.min(W,H)*0.28+2;
