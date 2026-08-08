@@ -91,13 +91,14 @@ export const eng={
   o.start(t); sub.start(t); const e=t+dur+0.03; o.stop(e); sub.stop(e); },
  lead(t,midi,timbre,dur,vol){ const c=this.ctx,f=mtof(midi),v=vol||1;
   const n=(timbre==='supersaw'||timbre==='goa')?5:3;
+  const hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=150;
   const fl=c.createBiquadFilter(); fl.type='lowpass'; fl.Q.value=1.2;
   fl.frequency.setValueAtTime(6000,t); fl.frequency.exponentialRampToValueAtTime(1200,t+dur);
   const g=c.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.16*v,t+0.006);
   g.gain.setValueAtTime(0.16*v,t+dur*0.7); g.gain.linearRampToValueAtTime(0,t+dur);
   for(let i=0;i<n;i++){ const o=c.createOscillator(); o.type=(timbre==='acid'?'square':'sawtooth');
    o.frequency.value=f; o.detune.value=(i-(n-1)/2)*14; o.connect(fl); o.start(t); o.stop(t+dur+0.05); }
-  fl.connect(g); g.connect(this.sum); this.sendD(g,0.4); this.sendR(g,0.25); },
+  fl.connect(hp); hp.connect(g); g.connect(this.sum); this.sendD(g,0.4); this.sendR(g,0.25); },
  pad(t,root,chord,dur){ const c=this.ctx; const notes=(chord||[0,7]).map(x=>root+12+x);
   notes.forEach(mid=>{ const f=mtof(mid);
    const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1100;
