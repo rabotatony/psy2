@@ -70,7 +70,7 @@ export const seq={
   if(P.perc&&sec.hat&&(s===6||s===14||s===22||s===30))E.shaker(t);
   // lead / arp
   if(sec.lead){
-    if(P.arp){ if(s%2===0){const tn=[0,2,4,7][(s/2)%4];E.lead(t,(this.st&&this.st.root)||40+24+sc[tn%sc.length],P.lead,sd*1.8,0.8);} }
+    if(P.arp){ if(s%2===0){const tn=[0,2,4,7][(s/2)%4];E.lead(t,((this.st&&this.st.root)||40)+24+sc[tn%sc.length],P.lead,sd*1.8,0.8);} }
     else if(s%4===0){ const deg=this.motif[s]||0;
       const prog=(PROGS[P.scale]||PROGS.MIN)[Math.floor(this.bar/8)%2];
       E.lead(t,((this.st&&this.st.root)||40)+24+sc[deg]+prog[Math.floor(this.bar/2)%4],P.lead,sd*3,sec.lead); }
