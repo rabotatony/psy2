@@ -57,7 +57,7 @@ export const seq={
   if(sec.bass&&P.bass!=='none'){
     const prog=(PROGS[P.scale]||PROGS.MIN)[Math.floor(this.bar/8)%2];
     const root=((this.st&&this.st.root)||40)+prog[Math.floor(this.bar/2)%4];
-    if(P.bass==='roll'){ if(s%2===0)E.bass(t,root,P.bass,sd*1.5); }
+    if(P.bass==='roll'){ if(s%8!==0&&s%2===0)E.bass(t,root,P.bass,sd*1.5); if(s%8===0)E.bass(t,root-12,P.bass,sd*1.2); }
     else if(P.bass==='off'){ if(s%8===4||s%8===20)E.bass(t,root,P.bass,sd*3); }
     else if(P.bass==='half'){ if(s%16===0)E.bass(t,root,P.bass,sd*7); }
     else if(P.bass==='wob'){ if(s%8===0)E.bass(t,root,P.bass,sd*7); }
