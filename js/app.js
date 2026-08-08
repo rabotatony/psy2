@@ -1,6 +1,6 @@
 // psy2 app — REVOLUTION: clean UI matching the vision (neon, visualizer, cards, macros, LUFS)
-import {eng} from './engine.js';
-import {seq,PRESETS} from './music.js';
+import {eng} from './engine.js?v=3';
+import {seq,PRESETS} from './music.js?v=3';
 const $=s=>document.querySelector(s);
 const state={bpm:142,style:'FULL-ON',root:42};
 let freqArr=null; let vizRot=0;
