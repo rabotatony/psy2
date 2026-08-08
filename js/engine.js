@@ -82,6 +82,7 @@ export const eng={
   const sg=c.createGain(); sg.gain.value=0.55;
   const fl=c.createBiquadFilter(); fl.type='lowpass';
   const acid=(mode==='acid'); fl.Q.value=acid?14:3;
+  if(mode==='wob'){ const wl=c.createOscillator(),wg=c.createGain(); wl.type='sine'; wl.frequency.value=2; wg.gain.value=900; wl.connect(wg); wg.connect(fl.frequency); wl.start(t); wl.stop(t+dur+0.05); }
   const open=acid?2500:1800, close=150;
   fl.frequency.setValueAtTime(open,t); fl.frequency.exponentialRampToValueAtTime(close,t+Math.min(dur,0.12));
   const g=c.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.42,t+0.003);
