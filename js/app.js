@@ -1,81 +1,80 @@
-// psy2 app — one-tap for beginners, full control for pros.
-import {STYLES,clamp,SOUND} from './core.js?v=2';
-import {eng} from './engine.js?v=2';
-import {seq} from './music.js?v=2';
-import {measureStyle} from './validate.js?v=2';
+// psy2 app — REVOLUTION: clean UI matching the vision (neon, visualizer, cards, macros, LUFS)
+import {eng} from './engine.js';
+import {seq,PRESETS} from './music.js';
 const $=s=>document.querySelector(s);
-const state={bpm:142,styleIdx:0};
-function applyStyle(i){
-  state.styleIdx=i;
-  const st=STYLES[i];
-  state.bpm=st.bpm;
-  const b=$('#bpmVal'); if(b)b.textContent=st.bpm;
-  const sl=$('#bpmSlider'); if(sl)sl.value=st.bpm;
-  seq.setStyle(st,7+i*13);
-  const sd=SOUND[st.name]; if(sd&&eng.ctx){eng.setStyleSynth(sd);eng.setMacro('drive',sd.drive);eng.setMacro('cutoff',sd.cut);eng.setMacro('space',sd.space);eng.setMacro('pump',sd.pump);}
-  document.querySelectorAll('.stylebtn').forEach((el,k)=>el.classList.toggle('on',k===i));
+const state={bpm:142,style:'FULL-ON',root:42};
+let freqArr=null;
+function applyStyle(name){
+  state.style=name; const p=PRESETS[name]; state.bpm=p.bpm;
+  const bv=$('#bpmVal'); if(bv)bv.textContent=p.bpm;
+  const sl=$('#bpmSlider'); if(sl)sl.value=p.bpm;
+  seq.setStyle(name,7+name.length*13);
+  document.querySelectorAll('.stylecard').forEach(el=>el.classList.toggle('on',el.dataset.style===name));
+  if(eng.ctx){ eng.setAutomation(0.8); }
 }
 function toggle(){
-  if(seq.playing){seq.stop(); const p=$('#play'); if(p)p.textContent='▶ PLAY';}
+  if(seq.playing){ seq.stop(); const p=$('#play'); if(p)p.textContent='PLAY ▶'; }
   else{
     try{
       eng.bind(state); seq.bind(state,eng);
-      if(!seq.style)applyStyle(state.styleIdx);
+      if(!seq.preset)seq.setStyle(state.style,7);
       seq.start();
-      if(eng.ctx&&eng.ctx.state==='suspended'){ eng.ctx.resume().then(()=>{const p=$('#play');if(p)p.textContent='■ STOP';}); }
-      else { const p=$('#play'); if(p)p.textContent='■ STOP'; }
-    }catch(e){
-      const b=document.getElementById('errbox'); if(b){b.style.display='block';b.textContent='PLAY ERR: '+e.message;}
-    }
+      const p=$('#play'); if(p)p.textContent='■ STOP';
+    }catch(e){ const b=$('#errbox'); if(b){b.style.display='block';b.textContent='PLAY ERR: '+e.message;} }
   }
 }
 function buildStyles(){
   const w=$('#styles'); if(!w)return; w.innerHTML='';
-  STYLES.forEach((s,i)=>{
-    const b=document.createElement('button'); b.className='stylebtn'; b.type='button';
-    b.innerHTML=s.name+'<small>'+s.bpm+'</small>';
-    b.addEventListener('click',()=>applyStyle(i));
-    w.appendChild(b);
+  Object.keys(PRESETS).forEach(name=>{
+    const c=document.createElement('button'); c.type='button'; c.className='stylecard'; c.dataset.style=name;
+    c.innerHTML='<b>'+name+'</b><small>'+PRESETS[name].bpm+' BPM</small><canvas width="70" height="22"></canvas>';
+    const cv=c.querySelector('canvas'),ctx=cv.getContext('2d');
+    ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--'+(name.toLowerCase())+'-c')||'#7ef';
+    ctx.beginPath(); for(let x=0;x<70;x++){ ctx.lineTo(x,11+Math.sin(x*0.4+name.length)*6*Math.sin(x*0.07)); } ctx.stroke();
+    c.addEventListener('click',()=>applyStyle(name));
+    w.appendChild(c);
   });
 }
-
 function buildMacros(){
-  const host=document.getElementById('styles'); if(!host)return;
-  if(document.getElementById('macroRow'))return; // single row only
-  const wrap=document.createElement('div'); wrap.id='macroRow';
-  wrap.style.cssText='display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:10px';
-  [["DRIVE",30,"drive"],["CUTOFF",80,"cutoff"],["SPACE",40,"space"],["PUMP",50,"pump"]].forEach(([lab,val,key])=>{
-    const l=document.createElement('label'); l.style.cssText='font-size:11px;color:#9ab';
-    l.innerHTML=lab+'<br>';
-    const r=document.createElement('input'); r.type='range'; r.min=0; r.max=100; r.value=val; r.style.width='110px';
-    r.addEventListener('input',()=>{ eng.bind(state); eng.setMacro(key, +r.value/100); });
-    l.appendChild(r); wrap.appendChild(l);
+  const host=$('#macros'); if(!host||host.dataset.built)return; host.dataset.built='1';
+  [['DRIVE',50,'drive'],['CUTOFF',80,'cutoff'],['SPACE',40,'space'],['PUMP',50,'pump']].forEach(([lab,val,key])=>{
+    const l=document.createElement('label'); l.className='macro';
+    l.innerHTML='<span>'+lab+'</span><input type="range" min="0" max="100" value="'+val+'"><em>'+val+'%</em>';
+    const r=l.querySelector('input'),em=l.querySelector('em');
+    r.addEventListener('input',()=>{ em.textContent=r.value+'%'; if(eng.ctx)eng.setMacro(key,+r.value/100); });
+    host.appendChild(l);
   });
-  host.parentNode.insertBefore(wrap,host);
 }
-
+function viz(){
+  const cv=$('#viz'); if(!cv)return; const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  function draw(){
+    requestAnimationFrame(draw);
+    ctx.fillStyle='rgba(5,8,12,0.3)'; ctx.fillRect(0,0,W,H);
+    if(eng.analyser&&seq.playing){
+      if(!freqArr)freqArr=new Uint8Array(eng.analyser.frequencyBinCount);
+      eng.analyser.getByteFrequencyData(freqArr);
+    }
+    const N=90; let rot=(rot||0)+0.004;
+    for(let i=0;i<N;i++){
+      const v=(freqArr&&seq.playing)?freqArr[i*3]/255:0.04+0.03*Math.sin(Date.now()/700+i*0.35);
+      const a=i/N*Math.PI*2+rot, R0=Math.min(W,H)*0.2, len=v*Math.min(W,H)*0.28+2;
+      ctx.strokeStyle='hsla('+(160+i*2)+',95%,'+(52+v*25)+'%,'+(0.3+v*0.7)+')';
+      ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(cx+Math.cos(a)*R0,cy+Math.sin(a)*R0); ctx.lineTo(cx+Math.cos(a)*(R0+len),cy+Math.sin(a)*(R0+len)); ctx.stroke();
+    }
+    // LUFS meter
+    const lm=$('#lufs'); if(lm&&eng.getLUFS)lm.textContent=eng.getLUFS()+' LUFS';
+  }
+  draw();
+}
 function init(){
-  buildStyles();
-  buildMacros();
+  buildStyles(); buildMacros();
   $('#play').addEventListener('click',toggle);
-  $('#bpmSlider').addEventListener('input',e=>{state.bpm=+e.target.value; $('#bpmVal').textContent=state.bpm;});
-  applyStyle(0);
-  const mb=$('#measure'); if(mb)mb.addEventListener('click',async()=>{
-    const st=STYLES[state.styleIdx];
-    const r=await measureStyle(st,2);
-    const out=$('#mout'); if(out)out.textContent='LUFS '+r.lufs+' · Crest '+r.crest+'dB · L'+r.low+'/M'+r.mid+'/H'+r.high+'%';
-  });
-  ['drive','cutoff','space','pump'].forEach(n=>{
-    const el=$('#m_'+n); if(!el)return;
-    el.addEventListener('input',e=>{ eng.bind(state); eng.setMacro(n, +e.target.value/100); });
-  });
-  const dj=$('#djBtn'); if(dj)dj.addEventListener('click',()=>{
-    state.dj=!state.dj;
-    seq.setDJ(state.dj,STYLES);
-    seq.styleIdx=state.styleIdx;
-    dj.classList.toggle('on',state.dj);
-    dj.textContent=state.dj?'🎧 DJ ON':'🎧 DJ';
-  });
-  seq.onStyleChange=(i)=>{ applyStyle(i); };
+  $('#dj').addEventListener('click',e=>{ seq.setDJ(!seq.dj); e.target.classList.toggle('on',seq.dj); });
+  $('#measure').addEventListener('click',()=>{ const m=$('#lufs'); if(m&&eng.getLUFS)m.textContent=eng.getLUFS()+' LUFS'; });
+  $('#bpmSlider').addEventListener('input',e=>{ state.bpm=+e.target.value; $('#bpmVal').textContent=state.bpm; });
+  applyStyle('FULL-ON');
+  viz();
 }
 document.addEventListener('DOMContentLoaded',init);
